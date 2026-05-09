@@ -1,0 +1,19 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+.vscode/
+.idea/
+
+# md-computer JIT-installs shadcn primitives on first dev run; do commit them
+# !components/ui/
+
+# Generated alongside .md files (you own these — keep .actions.ts, .tsx is regenerated)
+# src/**/page.tsx
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -1,0 +1,55 @@
+{
+  "dependencies": {
+    "@clack/prompts": "^0.9.1",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "ultracite": "7.6.5",
+    "@biomejs/biome": "2.4.14"
+  },
+  "name": "create-md-computer",
+  "scripts": {
+    "build": "tsup",
+    "check": "ultracite check",
+    "dev": "tsup --watch",
+    "fix": "ultracite fix",
+    "prepublishOnly": "pnpm build",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Scaffold a Vite + React + Tailwind + shadcn project pre-wired for md-computer",
+  "keywords": [
+    "create-app",
+    "scaffold",
+    "md-computer",
+    "vite",
+    "react",
+    "shadcn",
+    "tailwind"
+  ],
+  "homepage": "https://github.com/vladzima/create-md-computer#readme",
+  "bugs": {
+    "url": "https://github.com/vladzima/create-md-computer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladzima/create-md-computer.git"
+  },
+  "bin": {
+    "create-md-computer": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "template",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "Vlad Arbatov <vlad@arbatov.dev>"
+}
