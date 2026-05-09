@@ -5,11 +5,9 @@ dist/
 .vscode/
 .idea/
 
-# md-computer JIT-installs shadcn primitives on first dev run; do commit them
-# !components/ui/
-
-# Generated alongside .md files (you own these — keep .actions.ts, .tsx is regenerated)
-# src/**/page.tsx
+# Build-time cache produced by md-computer's Vite plugin so Tailwind can
+# discover the codegen-emitted classes. Regenerated on every transform.
+.md-computer/
 
 logs
 *.log

@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "md-computer/safelist.css";
 
-/* Pick up className="..." strings written inside .md files. */
-@source "**/*.md";
+/* md-computer caches each compiled .md → .tsx here so Tailwind's source
+   scanner discovers every class the codegen actually emits. */
+@source "../.md-computer/**/*.tsx";
 
 @custom-variant dark (&:is(.dark *));
 
