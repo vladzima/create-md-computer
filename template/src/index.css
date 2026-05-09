@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "md-computer/safelist.css";
+
+/* Pick up className="..." strings written inside .md files. */
+@source "**/*.md";
 
 @custom-variant dark (&:is(.dark *));
 
