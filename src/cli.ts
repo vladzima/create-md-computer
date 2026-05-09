@@ -7,6 +7,7 @@ import {
   readdirSync,
   readFileSync,
   renameSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -34,6 +35,7 @@ type PackageManager = "pnpm" | "npm" | "bun" | "yarn";
 
 interface RunOptions {
   packageManager: PackageManager;
+  preset: string | undefined;
   projectName: string;
   skipGit: boolean;
   skipInstall: boolean;
@@ -46,6 +48,7 @@ await main(cliArgs);
 
 interface CliArgs {
   pm: PackageManager | undefined;
+  preset: string | undefined;
   skipGit: boolean;
   skipInstall: boolean;
   target: string | undefined;
@@ -55,6 +58,7 @@ function parseArgs(argv: string[]): CliArgs {
   const out: CliArgs = {
     target: undefined,
     pm: undefined,
+    preset: undefined,
     skipInstall: false,
     skipGit: false,
   };
@@ -63,26 +67,56 @@ function parseArgs(argv: string[]): CliArgs {
     if (!a) {
       continue;
     }
-    if (a === "--no-install") {
-      out.skipInstall = true;
-    } else if (a === "--no-git") {
-      out.skipGit = true;
-    } else if (a === "--pm") {
-      const next = argv[i + 1];
-      if (isPackageManager(next)) {
-        out.pm = next;
-        i++;
-      }
-    } else if (a.startsWith("--pm=")) {
-      const v = a.slice("--pm=".length);
-      if (isPackageManager(v)) {
-        out.pm = v;
-      }
-    } else if (!a.startsWith("-") && out.target === undefined) {
+    const consumed = applyFlag(a, argv, i, out);
+    if (consumed > 0) {
+      i += consumed - 1;
+      continue;
+    }
+    if (!a.startsWith("-") && out.target === undefined) {
       out.target = a;
     }
   }
   return out;
+}
+
+// Returns how many argv tokens this flag consumed (0 = not a known flag).
+function applyFlag(a: string, argv: string[], i: number, out: CliArgs): number {
+  if (a === "--no-install") {
+    out.skipInstall = true;
+    return 1;
+  }
+  if (a === "--no-git") {
+    out.skipGit = true;
+    return 1;
+  }
+  if (a === "--pm") {
+    const next = argv[i + 1];
+    if (isPackageManager(next)) {
+      out.pm = next;
+      return 2;
+    }
+    return 1;
+  }
+  if (a.startsWith("--pm=")) {
+    const v = a.slice("--pm=".length);
+    if (isPackageManager(v)) {
+      out.pm = v;
+    }
+    return 1;
+  }
+  if (a === "--preset") {
+    const next = argv[i + 1];
+    if (next && !next.startsWith("-")) {
+      out.preset = next;
+      return 2;
+    }
+    return 1;
+  }
+  if (a.startsWith("--preset=")) {
+    out.preset = a.slice("--preset=".length);
+    return 1;
+  }
+  return 0;
 }
 
 function isPackageManager(v: string | undefined): v is PackageManager {
@@ -112,6 +146,7 @@ async function main(args: CliArgs): Promise<void> {
     targetDir,
     projectName,
     packageManager,
+    preset: args.preset,
     skipInstall: args.skipInstall,
     skipGit: args.skipGit,
   });
@@ -203,9 +238,38 @@ function scaffold(opts: RunOptions): void {
     installDeps(opts.targetDir, opts.packageManager);
   }
 
+  if (opts.preset && !opts.skipInstall) {
+    applyShadcnPreset(opts.targetDir, opts.preset);
+  }
+
   if (!opts.skipGit) {
     log.step("Initializing git repository");
     initGit(opts.targetDir);
+  }
+}
+
+// Apply a shadcn theme preset (https://ui.shadcn.com/themes) on top of the
+// scaffolded project. We delete our default shadcn config first so `shadcn
+// init` runs as a fresh install and doesn't prompt about re-installing
+// existing components (which it does even with --yes --force).
+function applyShadcnPreset(dir: string, preset: string): void {
+  log.step(`Applying shadcn preset ${pc.cyan(preset)}`);
+  for (const f of ["components.json"]) {
+    const p = join(dir, f);
+    if (existsSync(p)) {
+      unlinkSync(p);
+    }
+  }
+  try {
+    execSync(
+      `npx shadcn@latest init --preset ${preset} --template vite --yes --force`,
+      { cwd: dir, stdio: "inherit" }
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log.warn(
+      `Preset apply failed (${msg}). The scaffolded project still works with the default theme — re-run \`npx shadcn@latest init --preset ${preset} --template vite --yes --force\` manually if you want to retry.`
+    );
   }
 }
 

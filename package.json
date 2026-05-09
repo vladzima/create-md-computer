@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scaffold a Vite + React + Tailwind + shadcn project pre-wired for md-computer",
   "keywords": [
     "create-app",

@@ -30,10 +30,25 @@ The first dev run installs whatever shadcn primitives the demo `.md` page refere
 ## Flags
 
 ```bash
-create-md-computer my-app --pm pnpm        # skip the package-manager prompt
-create-md-computer my-app --no-install     # skip dep install
-create-md-computer my-app --no-git         # skip git init + initial commit
+create-md-computer my-app --pm pnpm                  # skip the package-manager prompt
+create-md-computer my-app --no-install               # skip dep install
+create-md-computer my-app --no-git                   # skip git init + initial commit
+create-md-computer my-app --preset <id>              # apply a shadcn theme preset
 ```
+
+## Theming
+
+The default scaffold ships with shadcn's `neutral` / `new-york` defaults. To use a custom theme:
+
+1. Pick colors / radius / font on https://ui.shadcn.com
+2. Copy the preset ID out of the install command shadcn shows you (the `--preset` value)
+3. Pass it to the scaffolder:
+
+```bash
+npm create md-computer@latest my-app -- --preset bdzH1zUBM
+```
+
+After your base scaffold installs, `npx shadcn@latest init --preset <id> --template vite --yes --force` runs in the target dir. shadcn overwrites `components.json`, `src/index.css`, and `src/lib/utils.ts` with the preset's theme. You can re-run that command later if you want to switch presets.
 
 ## License
 

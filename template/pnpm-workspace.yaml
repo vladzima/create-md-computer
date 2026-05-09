@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: true
+  msw: true
+  sharp: true
+  "@swc/core": true
+  "@biomejs/biome": true
+  "@tailwindcss/oxide": true
